@@ -14,5 +14,5 @@ apply_default_settings(TARGETS 1js)
 link_vcpkg_dependencies(TARGETS 1js)
 target_link_libraries(1js PUBLIC viet)
 
-find_package(unofficial-node-api REQUIRED)
-target_link_libraries(1js PUBLIC unofficial::node-api::node-api)
+# link node
+target_link_libraries(1js PUBLIC node)

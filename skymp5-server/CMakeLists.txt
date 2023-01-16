@@ -11,7 +11,18 @@ yarn_execute_command(
 )
 
 # Find node-addon-api
-find_package(unofficial-node-addon-api REQUIRED)
+yarn_execute_command(
+  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+  COMMAND cmake-js-fetch
+)
+include(${CMAKE_BINARY_DIR}/cmake-js-fetch-build/node.cmake)
+execute_process(COMMAND node -p "require('node-addon-api').include"
+  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+  OUTPUT_VARIABLE NODE_ADDON_API_DIR
+)
+string(REPLACE "\n" "" NODE_ADDON_API_DIR ${NODE_ADDON_API_DIR})
+string(REPLACE "\"" "" NODE_ADDON_API_DIR ${NODE_ADDON_API_DIR})
+target_include_directories(node INTERFACE ${NODE_ADDON_API_DIR})
 
 # Add C++ part of the server (except cpp/addon)
 add_subdirectory(cpp)
@@ -26,7 +37,7 @@ if(MSVC)
 endif()
 add_library(${PROJECT_NAME} SHARED ${sources})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "scam_native" PREFIX "" SUFFIX ".node")
-target_link_libraries(${PROJECT_NAME} PRIVATE unofficial::node-addon-api::node-addon-api)
+target_link_libraries(${PROJECT_NAME} PRIVATE node)
 
 # Put build artifacts into build/dist/server
 if(WIN32)
